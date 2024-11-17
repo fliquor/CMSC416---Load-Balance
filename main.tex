@@ -1,0 +1,99 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\newtheorem{definition}{Definition}
+
+\title{CMSC416 - Load Balance}
+\author{Richard Sembria}
+\date{November 2024}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+\section{The What and Why}
+\begin{definition}
+    Load imbalance: unequal amounts of “work” assigned to different processes/threads where work is computation, communication, or both.
+\end{definition}
+Why care? Load imbalance leads to overloaded processes that can slow down all other processes. This can be calculated as:
+
+\begin{equation}
+    Load\ Imbalance = \frac{max\_load}{mean\_load}
+\end{equation}
+
+\section{Solution}
+\subsection{Setup}
+What is the solution to load imbalance? Load balancing!
+\begin{definition}
+    Load balancing: the process of balancing load across threads, processes etc.
+\end{definition}
+We want the maximum load to be as close as possible to the average load. In order words, we want the imbalance ratio to be equal to 1. Steps for load balancing: 
+
+\begin{enumerate}
+    \item Determine if load balancing is needed.
+    \item Determine when and how often to load balance.
+    \item Determine what information to gather/use for load balancing.
+    \item Choose/design a load balancing algorithm.
+\end{enumerate}
+
+\subsection{Step 1}
+First determine if loaded balancing is even needed. Use empirical information obtained from performance tools, developer knowledge, and analytical models of load distribution to decide.
+
+\subsection{Step 2}
+There are two types of load balancing:
+\begin{itemize}
+    \item Static load balancing (aka initial work distribution/partitioning): done at the program startup        or separate runs
+    \item Dynamic load balancing: happens during program execution. 
+\end{itemize}
+
+\subsection{Step 3}
+For information gathering for load balancing, there are three methods:
+\begin{itemize}
+    \item Centralized load balancing: Gather all load information at one process -- global view of data.
+    \item Distributed load balancing: Every process only knows the load of a constant number of “neighbors.”
+    \item Hybrid or hierarchical load balancing
+\end{itemize}
+Next, determine what information is used for load balancing:
+\begin{itemize}
+    \item Computational load
+    \item Possibly, communication load (number/sizes of messages)
+    \item Communication graph
+\end{itemize}
+
+\subsection{Step 4}
+Finally, decide on your load balancing algorithm. Keep in mind we want:
+\begin{itemize}
+    \item Load imbalance ratio as close to 1.
+    \item Minimal data migration.
+\end{itemize}
+Less importantly: 
+\begin{itemize}
+    \item Balance (possibly reduce) communication load (volume).
+    \item Keep the time for doing load balancing to a minimum.
+\end{itemize}
+Going back to step 2, let us look at static load balancing methods:
+\begin{enumerate}
+    \item Decomposition of n-D Stencil.
+    \item Using orthogonal recursive bisection (ORB), space-filling curves, etc.
+    \item Simple greedy strategy
+        \begin{itemize}
+            \item Sort all the processes by their load
+            \item Take some load (work) from the heaviest loaded process and assign that work to the
+                  most lightly loaded process
+        \end{itemize}
+    \item Work stealing
+        \begin{itemize}
+            \item Decentralized strategy where processes steal work from nearby processes when
+                  they have nothing to do
+            \item Each process has a queue of work items. When empty, the current process will look              "steal" work from neighboring processes.
+        \end{itemize}
+\end{enumerate}
+
+\section{Other Considerations}
+Take note that work load balancing may not be the only thing to pay attention to. There is also:
+\begin{itemize}
+    \item Communication-aware load balancing: Try to move (units of) work to processes that this work communicates with frequently
+    \item Network topology-aware load balancing: Take into account how the nodes are connected to one another to minimize some metrics (number of hops,
+    average link load etc.)
+\end{itemize}
+\end{document}
